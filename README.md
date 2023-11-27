@@ -61,3 +61,6 @@ second end 0m50s
 ㅤ┃ㅤㅤㅤ↝ characters.
 ㅤ┗00:50 second final end
 ```
+
+## Similar Projects
+[korotaggertool](https://github.com/kylemsguy/korotaggertool) web-based tags editor by [kylemsguy](https://github.com/kylemsguy)
