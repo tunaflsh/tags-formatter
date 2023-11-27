@@ -18,18 +18,17 @@ WRAP_INDENT = (
     "ㅤ┃ㅤㅤㅤ↝ ",  # start & middle
     "ㅤ ㅤㅤㅤ↝ ",  # end
 )
-TAG_FORMAT = "{prefix}{time} {text}"
+TAG_FORMAT = "{indent}{time} {text}"
 
 
 parser = argparse.ArgumentParser(
+    add_help=False,
     formatter_class=argparse.RawDescriptionHelpFormatter,
-    description="This script processes the input file to generate formatted tags,"
-    "\nmodifies the file directly, and copies the outcome to the clipboard."
-    "\nThe input file can be KoroTagger's output or already formatted"
-    "\ntimestamps to be reformatted.",
+    description="This script processes KoroTagger output and formats it for YouTube"
+    "\ntimestamps.",
     epilog="A line without tags — but is immediately followed by one — is considered"
     "\na section heading and can be empty. This will be detected in"
-    "\nKoroTagger's output as well as in already formatted tags. In the"
+    "\nKoroTagger output as well as in already formatted tags. In the"
     "\nlatter case, the file will be reformatted to fix any inconsistencies."
     "\n"
     "\nTo customize the formats, adjust the constants in the script."
@@ -40,7 +39,7 @@ parser = argparse.ArgumentParser(
     '\nSECTION_FORMAT = "*[{}]*"'
     '\nSECTION_INDENT = ("ㅤ┏", "ㅤ┣", "ㅤ┗")'
     '\nWRAP_INDENT = ("ㅤ┃ㅤㅤㅤ↝ ", "ㅤ ㅤㅤㅤ↝ ")'
-    '\nTAG_FORMAT = "{prefix}{time} {text}"'
+    '\nTAG_FORMAT = "{indent}{time} {text}"'
     "\n"
     "\nExample input file"
     "\n-----------------------------------------------------------------"
@@ -69,15 +68,21 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     "filename",
     nargs="?",
-    help="the file containing the timestamps to be formatted. If not specified,"
-    " the clipboard content is used instead",
+    help="Specifies the file containing tags. If not provided, the script"
+    " uses clipboard content.",
+)
+parser.add_argument(
+    "-h",
+    "--help",
+    action="help",
+    help="Show this help message and exit.",
 )
 parser.add_argument(
     "-o",
     "--output",
     default=None,
-    help="the file to write the formatted timestamps to. By default, the"
-    " input file is modified directly",
+    help="Specify the output file for formatted timestamps. Defaults to"
+    " modifying the input file in place.",
 )
 parser.add_argument(
     "-s",
@@ -85,8 +90,8 @@ parser.add_argument(
     nargs="?",
     const=180,
     type=int,
-    help="enable automatic sectioning when the time gap reaches sec seconds"
-    " (default: 180)",
+    help="Enable automatic sectioning when a time gap of specified seconds"
+    " is reached. Default is 180 seconds.",
     metavar="SECONDS",
     dest="sec",
 )
@@ -98,7 +103,7 @@ wrap_group.add_argument(
     const=50,
     default=50,
     type=int,
-    help="wrap text at len characters. To disable wrapping, use -nw (default: 50)",
+    help="Wrap text at specified character length. Default is 50 characters.",
     metavar="LENGTH",
 )
 wrap_group.add_argument(
@@ -106,7 +111,7 @@ wrap_group.add_argument(
     "--no-wrap",
     action="store_const",
     const=None,
-    help="disable text wrapping",
+    help="Disable text wrapping.",
     dest="wrap",
 )
 args = parser.parse_args()
@@ -191,7 +196,7 @@ for curr, succ in pairwise(
     # Format tag
     h, m, s = int(h or 0), int(m or 0), int(s)
     time = bool(h) * f"{h}:" + f"{m:02}:{s:02}"
-    tag = TAG_FORMAT.format(prefix=SECTION_INDENT[pos], time=time, text=text)
+    tag = TAG_FORMAT.format(indent=SECTION_INDENT[pos], time=time, text=text)
     if wrapper:
         wrapper.subsequent_indent = WRAP_INDENT[pos == END]
         tag = wrapper.fill(tag)
