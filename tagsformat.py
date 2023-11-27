@@ -22,7 +22,7 @@ WRAP_INDENT = (
     "ㅤ┃ㅤㅤㅤ↝ ",  # start & middle
     "ㅤ ㅤㅤㅤ↝ ",  # end
 )
-TAG_FORMAT = "{indent}{time} {text}"
+TAG_FORMAT = "{section_indent}{time} {text}"
 
 
 parser = argparse.ArgumentParser(
@@ -41,7 +41,7 @@ parser = argparse.ArgumentParser(
     '\nSECTION_FORMAT = "*[{}]*"'
     '\nSECTION_INDENT = ("ㅤ┏", "ㅤ┣", "ㅤ┗")'
     '\nWRAP_INDENT = ("ㅤ┃ㅤㅤㅤ↝ ", "ㅤ ㅤㅤㅤ↝ ")'
-    '\nTAG_FORMAT = "{indent}{time} {text}"'
+    '\nTAG_FORMAT = "{section_indent}{time} {text}"'
     "\n"
     "\nExample input file"
     "\n-----------------------------------------------------------------"
@@ -200,7 +200,7 @@ for curr, succ in pairwise(
     # Format tag
     h, m, s = int(h or 0), int(m or 0), int(s)
     time = bool(h) * f"{h}:" + f"{m:02}:{s:02}"
-    tag = TAG_FORMAT.format(indent=SECTION_INDENT[pos], time=time, text=text)
+    tag = TAG_FORMAT.format(section_indent=SECTION_INDENT[pos], time=time, text=text)
     if wrapper:
         wrapper.subsequent_indent = WRAP_INDENT[pos == END]
         tag = wrapper.fill(tag)
