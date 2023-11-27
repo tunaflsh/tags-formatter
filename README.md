@@ -1,17 +1,21 @@
 # Tags Formatter
 
 ## Overview
+
 This script processes KoroTagger output and formats it for YouTube timestamps.
 
 ## Usage
-```
+
+```shell
 tagsformat.py [-h] [-o OUTPUT] [-s [SECONDS]] [-w [LENGTH] | -nw] [filename]
 ```
 
-### Positional Arguments:
+### Positional Arguments
+
 - `filename`: Specifies the file containing tags. If not provided, the script uses clipboard content.
 
-### Options:
+### Options
+
 - `-h`, `--help`: Show this help message and exit.
 - `-o OUTPUT`, `--output OUTPUT`: Specify the output file for formatted timestamps. Defaults to modifying the input file in place.
 - `-s [SECONDS]`, `--auto-section [SECONDS]`: Enable automatic sectioning when a time gap of specified seconds is reached. Default is 180 seconds.
@@ -19,12 +23,14 @@ tagsformat.py [-h] [-o OUTPUT] [-s [SECONDS]] [-w [LENGTH] | -nw] [filename]
 - `-nw`, `--no-wrap`: Disable text wrapping.
 
 ## Features
+
 - [x] Handles lines without tags as section headings, which can be empty.
 - [x] Automatically splits the tags into sections based on specified time gaps.
 - [x] Allows customization of formats through constants in the script.
 - [ ] Reformats pre-formatted files to fix inconsistencies.
 
 ## Customization
+
 Modify these constants in the script to adjust formats:
 
 ```python
@@ -38,7 +44,8 @@ TAG_FORMAT = "{prefix}{time} {text}"
 ## Examples
 
 ### Input File
-```
+
+```text
 Section 1
 start 0m0s
 middle 0m10s
@@ -50,7 +57,8 @@ second end 0m50s
 ```
 
 ### Result
-```
+
+```text
 *· · • • • ✤  TIMESTAMPS  ✤ • • • · ·*
 *[Section 1]*
 ㅤ┏00:00 start
@@ -64,4 +72,5 @@ second end 0m50s
 ```
 
 ## Similar Projects
+
 [korotaggertool](https://github.com/kylemsguy/korotaggertool) web-based tags editor by [kylemsguy](https://github.com/kylemsguy)
