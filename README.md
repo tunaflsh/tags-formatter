@@ -16,7 +16,7 @@ tagsformat.py [-h] [-o OUTPUT] [-s [SECONDS]] [-w [LENGTH] | -nw] [filename]
 
 ### Options
 
-- `-h`, `--help`: Show this help message and exit.
+- `-h`, `--help`: Show the help message and exit.
 - `-o OUTPUT`, `--output OUTPUT`: Specify the output file for formatted timestamps. Defaults to modifying the input file in place.
 - `-s [SECONDS]`, `--auto-section [SECONDS]`: Enable automatic sectioning when a time gap of specified seconds is reached. Default is 180 seconds.
 - `-w [LENGTH]`, `--wrap [LENGTH]`: Wrap text at specified character length. Default is 50 characters.
