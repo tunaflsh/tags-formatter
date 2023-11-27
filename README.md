@@ -19,9 +19,10 @@ tagsformat.py [-h] [-o OUTPUT] [-s [SECONDS]] [-w [LENGTH] | -nw] [filename]
 - `-nw`, `--no-wrap`: Disable text wrapping.
 
 ## Features
-- Handles lines without tags as section headings, which can be empty. This is compatible with both KoroTagger output and pre-formatted tags.
-- Reformats pre-formatted files to fix inconsistencies.
-- Allows customization of formats through constants in the script.
+- [x] Handles lines without tags as section headings, which can be empty.
+- [x] Automatically splits the tags into sections based on specified time gaps.
+- [x] Allows customization of formats through constants in the script.
+- [ ] Reformats pre-formatted files to fix inconsistencies.
 
 ## Customization
 Modify these constants in the script to adjust formats:
