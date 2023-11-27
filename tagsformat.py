@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+"""
+Licensed under the MIT License.
+Source: https://github.com/tunaflsh/tags-formatter
+"""
 import argparse
 import io
 import re
@@ -27,9 +31,7 @@ parser = argparse.ArgumentParser(
     description="This script processes KoroTagger output and formats it for YouTube"
     "\ntimestamps.",
     epilog="A line without tags — but is immediately followed by one — is considered"
-    "\na section heading and can be empty. This will be detected in"
-    "\nKoroTagger output as well as in already formatted tags. In the"
-    "\nlatter case, the file will be reformatted to fix any inconsistencies."
+    "\na section heading and can be empty."
     "\n"
     "\nTo customize the formats, adjust the constants in the script."
     "\n"
