@@ -2,11 +2,11 @@
 
 ## Overview
 
-This script processes KoroTagger output and formats it for YouTube timestamps.
+This script processes [KoroTagger](https://563563.xyz/korotagger/) output and formats it for YouTube timestamps.
 
 ## Usage
 
-```shell
+```python console
 tagsformat.py [-h] [-o OUTPUT] [-s [SECONDS]] [-w [LENGTH] | -nw] [filename]
 ```
 
@@ -73,4 +73,8 @@ second end 0m50s
 
 ## Similar Projects
 
-[korotaggertool](https://github.com/kylemsguy/korotaggertool) web-based tags editor by [kylemsguy](https://github.com/kylemsguy)
+- [korotaggertool](https://github.com/kylemsguy/korotaggertool) is a web-based tags editor by [kylemsguy](https://github.com/kylemsguy)
+
+## Acknowledgements
+
+- [KoroTagger](https://github.com/Yarn/korotagger) is a Discord bot to tag live streams. See manual [here](https://563563.xyz/korotagger/).
