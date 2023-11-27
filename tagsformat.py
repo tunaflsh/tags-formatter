@@ -130,15 +130,17 @@ with open(args.filename, "r") if args.filename else io.StringIO(pyperclip.paste(
     # Skip header text from Korotagger
     if line == "Tags\n":
         line = f.readline()
-    if not re.fullmatch(
+    if re.fullmatch(
         r"https?://\S+"
         r" \S+ \d{1,2}, \d{4} \d{1,2}:\d{2} [AP]M"
         r" \d+ tags? \(\d+\.?\d+/min\)\n",
         line,
     ):
-        if korotags.fullmatch(line):
-            input_lines.append("\n")
-        input_lines.append(line)
+        line = f.readline()
+    # Add an empty line to indicate the start of the first section
+    if korotags.fullmatch(line) and args.sec:
+        input_lines.append("\n")
+    input_lines.append(line)
     input_lines.extend(f.readlines())
     while input_lines[-1] == "\n":
         input_lines.pop()
