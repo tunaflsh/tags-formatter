@@ -221,6 +221,6 @@ for curr, succ in pairwise(
 pyperclip.copy(buffer.getvalue())
 
 # Write to file
-if filename := args.output or args.filename:
-    with open(filename, "w") as f:
+if args.output:
+    with open(args.output, "w") as f:
         f.write(buffer.getvalue())
