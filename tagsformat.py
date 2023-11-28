@@ -222,5 +222,5 @@ pyperclip.copy(buffer.getvalue())
 
 # Write to file
 if args.output:
-    with open(args.output, "w") as f:
+    with open(args.output, "w", encoding='utf-8') as f:
         f.write(buffer.getvalue())
