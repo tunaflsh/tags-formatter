@@ -83,8 +83,8 @@ parser.add_argument(
     "-o",
     "--output",
     default=None,
-    help="Specify the output file for formatted timestamps. Defaults to"
-    " modifying the input file in place.",
+    help="Additionally to copying to clipboard, write the output to the"
+    " specified file.",
 )
 parser.add_argument(
     "-s",
@@ -121,32 +121,36 @@ args = parser.parse_args()
 buffer = io.StringIO()
 wrapper = textwrap.TextWrapper(width=args.wrap) if args.wrap else None
 korotags = re.compile(
-    r"(?P<text>.*) (?:(?P<h>\d+)h)?(?:(?P<m>\d+)m)?(?P<s>\d+)s\n?",
+    r"(?P<text>.*) (?:(?P<h>\d+)h)?(?:(?P<m>\d+)m)?(?P<s>\d+)s",
+)
+korotags_header = re.compile(
+    r"https?://\S+ \S+ \d{1,2}, \d{4} \d{1,2}:\d{2} [AP]M \d+ tags? \(\d+\.?\d+/min\)",
 )
 
 
 with open(args.filename, "r") if args.filename else io.StringIO(pyperclip.paste()) as f:
-    input_lines = []
-    while (line := f.readline()) == "\n":
-        pass
+    lines = f.read().splitlines()
+    # Skip empty lines at the start of the file
+    for i, line in enumerate(lines):
+        if line:
+            break
+    del lines[:i]
     # Skip header text from Korotagger
-    if line == "Tags\n":
-        line = f.readline()
-    if re.fullmatch(
-        r"https?://\S+"
-        r" \S+ \d{1,2}, \d{4} \d{1,2}:\d{2} [AP]M"
-        r" \d+ tags? \(\d+\.?\d+/min\)\n",
-        line,
-    ):
-        line = f.readline()
+    if lines[0] == "Tags" and korotags_header.fullmatch(lines[1]):
+        del lines[:2]
+    elif korotags_header.fullmatch(lines[0]):
+        del lines[0]
     # Add an empty line to indicate the start of the first section
     if korotags.fullmatch(line) and args.sec:
-        input_lines.append("\n")
-    input_lines.append(line)
-    input_lines.extend(f.readlines())
-    while input_lines[-1] == "\n":
-        input_lines.pop()
-    input_lines.append("\n")
+        lines.insert(0, "")
+    # Drop the trailing empty lines
+    for i, line in enumerate(lines[::-1]):
+        if line:
+            break
+    if i:
+        del lines[-i:]
+    # Append an empty line to indicate the end of the last section
+    lines.append("")
 
 
 print(HEADER, file=buffer)
@@ -156,8 +160,7 @@ pos = START
 section_counter = 0
 
 for curr, succ in pairwise(
-    match.groups() if (match := korotags.fullmatch(line)) else line
-    for line in input_lines
+    match.groups() if (match := korotags.fullmatch(line)) else line for line in lines
 ):
     match curr, succ:
         case str(text), str():
@@ -218,9 +221,10 @@ for curr, succ in pairwise(
 
 
 # Copy to clipboard
-pyperclip.copy(buffer.getvalue())
+buffer_value = buffer.getvalue()
+pyperclip.copy(buffer_value)
 
 # Write to file
 if args.output:
-    with open(args.output, "w", encoding='utf-8') as f:
-        f.write(buffer.getvalue())
+    with open(args.output, "w", encoding="utf-8") as f:
+        f.write(buffer_value)
