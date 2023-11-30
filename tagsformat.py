@@ -128,7 +128,7 @@ korotags_header = re.compile(
 )
 
 
-with open(args.filename, "r") if args.filename else io.StringIO(pyperclip.paste()) as f:
+with open(args.filename, "r", encoding="utf-8") if args.filename else io.StringIO(pyperclip.paste()) as f:
     lines = f.read().splitlines()
     # Skip empty lines at the start of the file
     for i, line in enumerate(lines):
