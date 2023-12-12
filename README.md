@@ -65,7 +65,7 @@ $ python tagsformat.py input.txt
 
 ## Similar Projects
 
-- [korotaggertool](https://github.com/kylemsguy/korotaggertool) is a web-based tags editor by [kylemsguy](https://github.com/kylemsguy)
+- [korotaggertool](https://github.com/kylemsguy/korotaggertool) is a web-based tags editor.
 
 ## Acknowledgements
 
