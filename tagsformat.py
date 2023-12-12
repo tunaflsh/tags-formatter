@@ -26,74 +26,60 @@ TAG_FORMAT = "{section_indent}{time} {text}"
 
 
 parser = argparse.ArgumentParser(
-    add_help=False,
     formatter_class=argparse.RawDescriptionHelpFormatter,
-    description="This script processes KoroTagger output and formats it for YouTube"
-    "\ntimestamps.",
-    epilog="A line without tags — but is immediately followed by one — is considered"
-    "\na section heading and can be empty."
+    description="This script formats KoroTagger output or YouTube timestamps in a"
+    "\ncustomizable way. It then returns the formatted text and copies it to"
+    "\nthe clipboard.",
+    epilog="To customize the formats, adjust the constants in the script:"
     "\n"
-    "\nTo customize the formats, adjust the constants in the script."
-    "\n"
-    "\nExample constants"
-    "\n-----------------------------------------------------------------"
+    "\n```"
     '\nHEADER = "*· · • • • ✤  TIMESTAMPS  ✤ • • • · ·*"'
     '\nSECTION_FORMAT = "*[{}]*"'
     '\nSECTION_INDENT = ("ㅤ┏", "ㅤ┣", "ㅤ┗")'
     '\nWRAP_INDENT = ("ㅤ┃ㅤㅤㅤ↝ ", "ㅤ ㅤㅤㅤ↝ ")'
     '\nTAG_FORMAT = "{section_indent}{time} {text}"'
+    "\n```"
     "\n"
-    "\nExample input file"
-    "\n-----------------------------------------------------------------"
-    "\nSection 1"
-    "\nstart 0m0s"
-    "\nmiddle 0m10s"
-    "\nend 0m20s"
+    "\nTo specify a section heading, add `# heading` on a line by"
+    "\nitself or `#` for a blank heading:"
     "\n"
-    "\nsecond start 0m30s"
-    "\nVery long text that will be wrapped at 50 characters. 0m40s"
-    "\nsecond end 0m50s"
+    "\n```"
+    "\n$ cat input.txt"
+    "\n# Section 1"
+    "\ntext 0m0s"
+    "\ntext 0m10s"
+    "\ntext 0m20s"
+    "\n#"
+    "\ntext 0m30s"
+    "\nvery long text that will be wrapped at 50 characters. 0m40s"
+    "\ntext 0m50s"
+    "\n```"
     "\n"
-    "\nResult"
-    "\n-----------------------------------------------------------------"
+    "\nThen run the script:"
+    "\n"
+    "\n```"
+    "\n$ python tagsformat.py input.txt"
     "\n*· · • • • ✤  TIMESTAMPS  ✤ • • • · ·*"
     "\n*[Section 1]*"
     "\nㅤ┏00:00 start"
     "\nㅤ┣00:10 middle"
     "\nㅤ┗00:20 end"
-    "\n*[]*"
+    "\n"
     "\nㅤ┏00:30 second start"
     "\nㅤ┣00:40 Very long text that will be wrapped at 50"
     "\nㅤ┃ㅤㅤㅤ↝ characters."
-    "\nㅤ┗00:50 second final end",
+    "\nㅤ┗00:50 second final end"
+    "\n```",
 )
-parser.add_argument(
-    "filename",
-    nargs="?",
-    help="Specifies the file containing tags. If not provided, the script"
-    " uses clipboard content.",
-)
-parser.add_argument(
-    "-h",
-    "--help",
-    action="help",
-    help="Show this help message and exit.",
-)
-parser.add_argument(
-    "-o",
-    "--output",
-    default=None,
-    help="Additionally to copying to clipboard, write the output to the"
-    " specified file.",
-)
+parser.add_argument("input", help="file containing timestamps")
 parser.add_argument(
     "-s",
     "--auto-section",
     nargs="?",
     const=180,
     type=int,
-    help="Enable automatic sectioning when a time gap of specified seconds"
-    " is reached. Default is 180 seconds.",
+    help="enable automatic sectioning when a time gap of specified seconds"
+    " is reached. Default: 180",
     metavar="SECONDS",
     dest="sec",
 )
@@ -105,7 +91,7 @@ wrap_group.add_argument(
     const=50,
     default=50,
     type=int,
-    help="Wrap text at specified character length. Default is 50 characters.",
+    help="wrap text at specified character length. Default: 50",
     metavar="LENGTH",
 )
 wrap_group.add_argument(
@@ -113,22 +99,22 @@ wrap_group.add_argument(
     "--no-wrap",
     action="store_const",
     const=None,
-    help="Disable text wrapping.",
+    help="disable text wrapping",
     dest="wrap",
 )
 args = parser.parse_args()
 
 buffer = io.StringIO()
 wrapper = textwrap.TextWrapper(width=args.wrap) if args.wrap else None
-korotags = re.compile(
-    r"(?P<text>.*) (?:(?P<h>\d+)h)?(?:(?P<m>\d+)m)?(?P<s>\d+)s",
-)
+
 korotags_header = re.compile(
     r"https?://\S+ \S+ \d{1,2}, \d{4} \d{1,2}:\d{2} [AP]M \d+ tags? \(\d+\.?\d+/min\)",
 )
+korotags_pattern = re.compile(
+    r"(?P<text>.*) (?:(?P<h>\d+)h)?(?:(?P<m>\d+)m)?(?P<s>\d+)s",
+)
 
-
-with open(args.filename, "r", encoding="utf-8") if args.filename else io.StringIO(pyperclip.paste()) as f:
+with open(args.input, "r", encoding="utf-8") as f:
     lines = f.read().splitlines()
     # Skip empty lines at the start of the file
     for i, line in enumerate(lines):
@@ -140,79 +126,70 @@ with open(args.filename, "r", encoding="utf-8") if args.filename else io.StringI
         del lines[:2]
     elif korotags_header.fullmatch(lines[0]):
         del lines[0]
-    # Add an empty line to indicate the start of the first section
-    if korotags.fullmatch(line) and args.sec:
-        lines.insert(0, "")
+    # Add blank heading to start the first section
+    if korotags_pattern.fullmatch(line) and args.sec:
+        lines.insert(0, "#")
     # Drop the trailing empty lines
     for i, line in enumerate(lines[::-1]):
         if line:
             break
     if i:
         del lines[-i:]
-    # Append an empty line to indicate the end of the last section
-    lines.append("")
+    # Add blank section to end the last section
+    lines.append("#")
 
 
 print(HEADER, file=buffer)
 
+heading_pattern = re.compile(r"\#\s*(?: (.*?))?\s*")
+
+
+def heading_or_tag():
+    for line in lines:
+        if heading := heading_pattern.fullmatch(line):
+            yield heading, None
+        elif tag := korotags_pattern.fullmatch(line):
+            text, h, m, s = tag.groups()
+            h = int(h or 0)
+            m = int(m or 0)
+            s = int(s)
+            yield None, (text, h, m, s)
+        else:
+            # write any non-tag lines as-is
+            buffer.write(line)
+
+
 START, MIDDLE, END = 0, 1, 2
 pos = START
-section_counter = 0
 
-for curr, succ in pairwise(
-    match.groups() if (match := korotags.fullmatch(line)) else line for line in lines
-):
-    match curr, succ:
-        case str(text), str():
-            # Current line is non-tag
-            buffer.write(text)
-            continue
-        case str(text), tuple():
-            # Current line is a section heading
-            section_counter += 1
-            print(
-                SECTION_FORMAT.format(
-                    text.strip()
-                    # Auto sectioning enabled
-                    or bool(args.sec) * f"Section {section_counter}"
-                ),
-                file=buffer,
-            )
-            pos = START  # Next line starts a section
-            continue
-        case (text, h, m, s), str():
-            # Current tag ends a section
-            insert_section = False
+
+for (heading, tag), (heading1, tag1) in pairwise(heading_or_tag()):
+    end = "\n"
+
+    if heading:
+        # Current line is a section heading
+        heading = heading.group(1)
+        print(SECTION_FORMAT.format(heading) if heading else "", file=buffer)
+        pos = START
+        continue
+    if heading1:
+        # Current tag ends a section
+        pos = END
+    if tag and tag1:
+        text, h, m, s = tag
+        _, h1, m1, s1 = tag1
+        if args.sec and args.sec <= (h1 - h) * 3600 + (m1 - m) * 60 + (s1 - s):
+            # Insert a blank section heading
             pos = END
-        case (text, h, m, s), (_, h_, m_, s_) if (
-            args.sec  # Auto sectioning enabled
-            and (  # Time gap reached
-                (int(h_ or 0) - int(h or 0)) * 3600
-                + (int(m_ or 0) - int(m or 0)) * 60
-                + (int(s_) - int(s))
-                >= args.sec
-            )
-        ):
-            # Insert a new section immediately after the current tag
-            insert_section = True
-            pos = END
-        case tuple(), tuple():
-            # Current tag is at the start or in the middle of a section
-            insert_section = False
+            end = "\n\n"
 
     # Format tag
-    h, m, s = int(h or 0), int(m or 0), int(s)
     time = bool(h) * f"{h}:" + f"{m:02}:{s:02}"
     tag = TAG_FORMAT.format(section_indent=SECTION_INDENT[pos], time=time, text=text)
     if wrapper:
         wrapper.subsequent_indent = WRAP_INDENT[pos == END]
         tag = wrapper.fill(tag)
-    print(tag, file=buffer)
-
-    # Add section heading
-    if insert_section:
-        section_counter += 1
-        print(SECTION_FORMAT.format(f"Section {section_counter}"), file=buffer)
+    print(tag, file=buffer, end=end)
 
     # START  (0) -> MIDDLE (1)
     # MIDDLE (1) -> MIDDLE (1)
@@ -223,8 +200,4 @@ for curr, succ in pairwise(
 # Copy to clipboard
 buffer_value = buffer.getvalue()
 pyperclip.copy(buffer_value)
-
-# Write to file
-if args.output:
-    with open(args.output, "w", encoding="utf-8") as f:
-        f.write(buffer_value)
+print(buffer_value)

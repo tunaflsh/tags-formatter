@@ -1,35 +1,29 @@
 # Tags Formatter
 
-## Overview
-
-This script processes [KoroTagger](https://563563.xyz/korotagger/) output and formats it for YouTube timestamps.
+`tagsformat.py` formats [KoroTagger](https://563563.xyz/korotagger/) output or YouTube timestamps in a customizable way. It then returns the formatted text to the console and clipboard.
 
 ## Usage
 
 ```python console
-tagsformat.py [-h] [-o OUTPUT] [-s [SECONDS]] [-w [LENGTH] | -nw] [filename]
+tagsformat.py [-h] [-s [SECONDS]] [-w [LENGTH] | -nw] input
 ```
 
 ### Positional Arguments
 
-- `filename`: Specifies the file containing tags. If not provided, the script uses clipboard content.
+- `input` - file containing timestamps
 
 ### Options
 
-- `-h`, `--help`: Show the help message and exit.
-- `-o OUTPUT`, `--output OUTPUT`: Specify the output file for formatted timestamps. Defaults to modifying the input file in place.
-- `-s [SECONDS]`, `--auto-section [SECONDS]`: Enable automatic sectioning when a time gap of specified seconds is reached. Default is 180 seconds.
-- `-w [LENGTH]`, `--wrap [LENGTH]`: Wrap text at specified character length. Default is 50 characters.
-- `-nw`, `--no-wrap`: Disable text wrapping.
+- `-h`, `--help` - show the help message and exit
+- `-s [SECONDS]`, `--auto-section [SECONDS]` - enable automatic sectioning when a time gap of specified seconds is reached. Default: 180
+- `-w [LENGTH]`, `--wrap [LENGTH]` - wrap text at specified character length. Default: 50
+- `-nw`, `--no-wrap` - disable text wrapping
 
-## Features
+## Input File
 
-- [x] Handles lines without tags as section headings, which can be empty.
-- [x] Automatically splits the tags into sections based on specified time gaps.
-- [x] Allows customization of formats through constants in the script.
-- [ ] Reformats pre-formatted files to fix inconsistencies.
+To specify a section heading, add `# heading` on a new line by itself or `#` for a blank heading. If auto-sectioning `-s` is enabled, those sections will have no heading.
 
-## Customization
+## Custom Formats
 
 Modify these constants in the script to adjust formats:
 
@@ -43,28 +37,26 @@ TAG_FORMAT = "{prefix}{time} {text}"
 
 ## Examples
 
-### Input File
-
-```text
-Section 1
+```console
+$ cat input.txt
+# Section 1
 start 0m0s
 middle 0m10s
 end 0m20s
-
+#
 second start 0m30s
 Very long text that will be wrapped at 50 characters. 0m40s
 second end 0m50s
 ```
 
-### Result
-
-```text
+```console
+$ python tagsformat.py input.txt
 *· · • • • ✤  TIMESTAMPS  ✤ • • • · ·*
 *[Section 1]*
 ㅤ┏00:00 start
 ㅤ┣00:10 middle
 ㅤ┗00:20 end
-*[]*
+
 ㅤ┏00:30 second start
 ㅤ┣00:40 Very long text that will be wrapped at 50
 ㅤ┃ㅤㅤㅤ↝ characters.
