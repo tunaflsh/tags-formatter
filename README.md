@@ -1,6 +1,6 @@
 # Tags Formatter
 
-`tagsformat.py` formats [KoroTagger](https://563563.xyz/korotagger/) output or YouTube timestamps in a customizable way. It then returns the formatted text to the console and clipboard.
+`tagsformat.py` formats [KoroTagger](https://563563.xyz/korotagger/) output ~~or YouTube timestamps~~ in a customizable way. It then returns the formatted text to the console and clipboard.
 
 ## Usage
 
@@ -62,6 +62,10 @@ $ python tagsformat.py input.txt
 ㅤ┃ㅤㅤㅤ↝ characters.
 ㅤ┗00:50 second final end
 ```
+
+## TODO
+
+- [ ] support YouTube timestamps as input.
 
 ## Similar Projects
 
